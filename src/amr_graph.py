@@ -5,8 +5,6 @@ import amr
 from amr import *
 import amr_parser
 from amr_parser import *
-import amr_fragment
-from amr_fragment import *
 from collections import deque, defaultdict
 from re_utils import extract_patterns, delete_pattern
 #from constants import *
