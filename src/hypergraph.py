@@ -324,7 +324,7 @@ class Hypergraph(object):
         cur_id = 0
         # count visited outgoing edges for each node
         unvisited = {}
-        for nid, node in self.found.items():
+        for nid, node in list(self.found.items()):
             unvisited[nid] = node.nout
         queue = [self.root]
         #print >>sys.stderr, '+++'
@@ -353,7 +353,7 @@ class Hypergraph(object):
             logger.writeln('sorted nodes: %s' % len(self.nodes))
             logger.writeln('nodes found but not sorted:')
             nids = [id(node) for node in self.nodes]
-            for nid, node in self.found.items():
+            for nid, node in list(self.found.items()):
                 if nid not in nids:
                     logger.writeln()
                     logger.writeln(node)

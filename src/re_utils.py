@@ -98,4 +98,4 @@ def extract_entity_spans(frag, opt_toks, role_toks, unaligned):
 
 if __name__ == '__main__':
     #print extract_patterns('. :t/tour~e.8 :wiki (. :-) :name (. :n/name :op1 (. :"APOLOGIES"~e.5) :op2 (. :"ON"~e.6) :op3 (. :"BEER"~e.7,10))', '~e\.[0-9]+(,[0-9]+)*')
-    print extract_entity_spans('. :t/tour~e.8 :wiki (. :-) :name (. :n/name :op1 (. :"APOLOGIES"~e.5) :op2 (. :"ON"~e.6) :op3 (. :"BEER"~e.7,10))')
+    print(extract_entity_spans('. :t/tour~e.8 :wiki (. :-) :name (. :n/name :op1 (. :"APOLOGIES"~e.5) :op2 (. :"ON"~e.6) :op3 (. :"BEER"~e.7,10))'))

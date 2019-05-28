@@ -4,7 +4,7 @@ import math
 from common.logarithm import LOGZERO, logadd
 
 def bin_search(l,v):
-    values, categories = zip(*l)
+    values, categories = list(zip(*l))
     index = bisect.bisect(values,v)    
     return categories[index]
 

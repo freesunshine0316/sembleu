@@ -3,13 +3,13 @@ import sys
 def filter_vars(line):
     fields = line.split('|||')
     parts = fields[2].split('/')
-    for i in xrange(len(parts)):
+    for i in range(len(parts)):
         try:
             while parts[i][-1] in '0123456789':
                 parts[i] = parts[i][:-1]
         except:
-            print line
-            print parts
+            print(line)
+            print(parts)
     fields[2] = '/'.join(parts)
     return '|||'.join(fields)
 
@@ -41,7 +41,7 @@ def main(argv):
         try:
             lex_part = line.strip().split('|||')[1].strip()
         except:
-            print line
+            print(line)
         graph_part = line.strip().split('|||')[2].strip()
         if lex_part not in stop_words:
             no_stop = True

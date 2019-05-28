@@ -97,7 +97,7 @@ def symfromstr(s):
     else:
         sym = s
     # symbols are interned to save memory
-    return intern(sym), idx
+    return sys.intern(sym), idx
 
 def symtostr(sym, idx):
     "Give a nonterminal an index in output."
@@ -181,8 +181,8 @@ class Rule(object):
         try:
             assert len(s) >= 3, 'fewer fields than expected'
         except:
-            print line
-            print s
+            print(line)
+            print(s)
             sys.exit(-1)
         if len(s) > 3:
             lhs, f, e, probs = s
@@ -224,11 +224,11 @@ class Rule(object):
         #self.e2f = copy.copy(e_var_indices)
 
         if len(f_var_indices) - int_gluesymnum != len(e_var_indices):
-            print '----------------'
-            print line
-            print f_var_indices
-            print int_gluesymnum
-            print e_var_indices
+            print('----------------')
+            print(line)
+            print(f_var_indices)
+            print(int_gluesymnum)
+            print(e_var_indices)
 
         assert len(f_var_indices)-int_gluesymnum == len(e_var_indices), line
         #if len(f_var_indices) != len(e_var_indices):
@@ -244,7 +244,7 @@ class Rule(object):
         """'vars' are lists of target side symbols. rewrite variables with lists
         of symbols in 'vars' and return the target side list of symbols after
         rewriting"""
-        print "rule.rewrite shouldn't be called"
+        print("rule.rewrite shouldn't be called")
         assert False
         assert len(vars) == self.arity
         result = []
@@ -381,10 +381,10 @@ class Rule(object):
             #print >>sys.stderr, '--------------------------------'
             try:
                 new_e = new_e.replace_fragment(fragment,sub_e)
-            except AssertionError, e:
+            except AssertionError as e:
                 #print fragment
                 #print sub_e
-                raise DerivationException, "Incompatible hyperedge type for nonterminal %s$%s." % (sub_rule.lhs[1:-1],str(i))
+                raise DerivationException("Incompatible hyperedge type for nonterminal %s$%s." % (sub_rule.lhs[1:-1],str(i)))
             #print >>sys.stderr, '=======after replacement======='
             #print >>sys.stderr, new_e
             #print >>sys.stderr, '-------------------------------'

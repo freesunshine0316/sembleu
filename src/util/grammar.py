@@ -13,7 +13,7 @@ from parser_td.td_rule import TdRule
 from collections import defaultdict
 import math
 import heapq
-import StringIO 
+import io 
 import itertools
 
 GRAPH_FORMAT = "hypergraph" 
@@ -85,7 +85,7 @@ class Grammar(dict):
         rhs1_type = None
         rhs2_type = None
 
-        buf = StringIO.StringIO() 
+        buf = io.StringIO() 
 
         for line in in_file: 
             line_count += 1
@@ -102,30 +102,26 @@ class Grammar(dict):
                         content, weights = rulestring.split(";",1)            
                         weight = 0.0 if not weights else (float(weights) if logprob else math.log(float(weights)))
                     except:
-                        raise GrammarError, \
-            "Line %i, Rule %i: Error near end of line." % (line_count, rule_count)
+                        raise GrammarError("Line %i, Rule %i: Error near end of line." % (line_count, rule_count))
                    
                     try:  
                         lhs, rhsstring = content.split("->")
                     except:
-                        raise GrammarError, \
-            "Line %i, Rule %i: Invalid rule format." % (line_count, rule_count)
+                        raise GrammarError("Line %i, Rule %i: Invalid rule format." % (line_count, rule_count))
                     lhs = lhs.strip()
                     if rule_count == 1:
                         output.start_symbol = lhs
                     if "|" in rhsstring:
                         if not is_synchronous and rule_count > 1:
-                            raise GrammarError,\
-           "Line %i, Rule %i: All or none of the rules need to have two RHSs." % (line_count, rule_count)
+                            raise GrammarError("Line %i, Rule %i: All or none of the rules need to have two RHSs." % (line_count, rule_count))
                         is_synchronous = True
                         try:
                             rhs1,rhs2 = rhsstring.split("|")
                         except:
-                            raise GrammarError,"Only up to two RHSs are allowed in grammar file."
+                            raise GrammarError("Only up to two RHSs are allowed in grammar file.")
                     else: 
                         if is_synchronous and rule_count > 0:
-                            raise ParserError,\
-            "Line %i, Rule %i: All or none of the rules need to have two RHSs." % (line_count, rule_count)
+                            raise ParserError("Line %i, Rule %i: All or none of the rules need to have two RHSs." % (line_count, rule_count))
                         is_synchronous = False
                         rhs1 = rhsstring
                         rhs2 = None                               
@@ -135,10 +131,9 @@ class Grammar(dict):
                         r1_nts = set([(ntlabel.label, ntlabel.index) for h, ntlabel, t in r1.nonterminal_edges()])
                         if not rhs1_type:
                             rhs1_type = GRAPH_FORMAT
-                    except (ParserError, IndexError), e: 
+                    except (ParserError, IndexError) as e: 
                         if rhs1_type == GRAPH_FORMAT:
-                           raise ParserError,\
-            "Line %i, Rule %i: Could not parse graph description: %s" % (line_count, rule_count, e.message)
+                           raise ParserError("Line %i, Rule %i: Could not parse graph description: %s" % (line_count, rule_count, e.message))
                         else:
                            r1 = parse_string(rhs1) 
                            nts = [t for t in r1 if isinstance(t, NonterminalLabel)]
@@ -153,10 +148,9 @@ class Grammar(dict):
                             r2_nts = set([(ntlabel.label, ntlabel.index) for h, ntlabel, t in r2.nonterminal_edges()])
                             if not rhs2_type:
                                 rhs2_type = GRAPH_FORMAT
-                        except (ParserError, IndexError, AssertionError), e: 
+                        except (ParserError, IndexError, AssertionError) as e: 
                             if rhs2_type == GRAPH_FORMAT:
-                               raise ParserError,\
-                "Line %i, Rule %i: Could not parse graph description: %s" % (line_count, rule_count, e.message)
+                               raise ParserError("Line %i, Rule %i: Could not parse graph description: %s" % (line_count, rule_count, e.message))
                             else:
                                r2 = parse_string(rhs2) 
                                nts = [t for t in r2 if isinstance(t, NonterminalLabel)]
@@ -165,8 +159,7 @@ class Grammar(dict):
 
                         # Verify that nonterminals match up
                         if not r1_nts == r2_nts:
-                            raise GrammarError, \
-            "Line %i, Rule %i: Nonterminals do not match between RHSs: %s %s" % (line_count, rule_count, str(r1_nts), str(r2_nts))
+                            raise GrammarError("Line %i, Rule %i: Nonterminals do not match between RHSs: %s %s" % (line_count, rule_count, str(r1_nts), str(r2_nts)))
                     else: 
                         r2 = None
                     try:    
@@ -174,10 +167,9 @@ class Grammar(dict):
                             output[rule_count] = rule_class(rule_count, lhs, weight, r2, r1, nodelabels = nodelabels, logprob = logprob)                                     
                         else: 
                             output[rule_count] = rule_class(rule_count, lhs, weight, r1, r2, nodelabels = nodelabels, logprob = logprob) 
-                    except Exception, e:         
-                        raise GrammarError, \
-            "Line %i, Rule %i: Could not initialize rule. %s" % (line_count, rule_count, e.message)
-                    buf = StringIO.StringIO() 
+                    except Exception as e:         
+                        raise GrammarError("Line %i, Rule %i: Could not initialize rule. %s" % (line_count, rule_count, e.message))
+                    buf = io.StringIO() 
                     rule_count += 1
 
         output.is_synchronous = is_synchronous
@@ -295,7 +287,7 @@ class Grammar(dict):
         Normalize the weights of the grammar so that all rules with the same LHS and the same
         first RHS sum up to 1.
         """
-        if isinstance(self[self.keys()[0]].rhs1, list):
+        if isinstance(self[list(self.keys())[0]].rhs1, list):
             equiv = lambda rule: (rule.symbol, tuple(rule.rhs1))        
         else:
             equiv = lambda rule: (rule.symbol, rule.rhs1)        
@@ -306,7 +298,7 @@ class Grammar(dict):
         Normalize the weights of the grammar so that all rules with the same LHS and the same
         second RHS sum up to 1.
         """
-        if isinstance(self[self.keys()[0]].rhs2, list):
+        if isinstance(self[list(self.keys())[0]].rhs2, list):
             equiv = lambda rule: (rule.symbol, tuple(rule.rhs2))        
         else:
             equiv = lambda rule: (rule.symbol, rule.rhs2)        
@@ -373,7 +365,7 @@ class Grammar(dict):
                 normalization_groups[r] = self[r].symbol
             bitext = True
         elif mode == "forward":
-            if type(self[self.keys()[0]].rhs2) is list:
+            if type(self[list(self.keys())[0]].rhs2) is list:
                 for r in self:             
                     normalization_groups[r] = (self[r].symbol, tuple(self[r].rhs2))
             else:
@@ -395,7 +387,7 @@ class Grammar(dict):
 
         def rec_choose_rules(nt):           
             if not nt in self.lhs_to_rules:
-                raise DerivationException, "Could not find a rule for nonterminal %s with hyperedge tail type %d in grammar." % nt
+                raise DerivationException("Could not find a rule for nonterminal %s with hyperedge tail type %d in grammar." % nt)
             dist = [(self[r].weight, r) for r in self.lhs_to_rules[nt]]
             r = sample(dist)
             rule = self[r]
@@ -479,13 +471,13 @@ class Grammar(dict):
                 if children: 
                     result = []
                     for combination in itertools.product(*children):
-                        weights, items = zip(*combination)
+                        weights, items = list(zip(*combination))
                         new_kbest_item = KbestItem()
                         new_kbest_item.derivation = dict(self.derivation)
                         new_kbest_item.weight = self.weight + sum(weights)
                         new_kbest_item.frontier =  self.frontier[1:]
                         new_kbest_item.frontier.extend(items)
-                        new_kbest_item.derivation[parent] = zip(childlabels, items)
+                        new_kbest_item.derivation[parent] = list(zip(childlabels, items))
                         result.append(new_kbest_item)
                     return result 
                 else:            

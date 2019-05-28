@@ -46,7 +46,7 @@ class AMR(object):
       self.nodes[i]=var_map_dict[v]
     for i,d in enumerate(self.links):
       new_dict={}
-      for k,v in d.items():
+      for k,v in list(d.items()):
         new_dict[var_map_dict[k]]=v
       self.links[i]=new_dict
 
@@ -56,9 +56,9 @@ class AMR(object):
       relation_triple=[]
       for i in range(len(self.nodes)):
         instance_triple.append(("instance",self.nodes[i],self.var_values[i]))
-        for k,v in self.links[i].items():
+        for k,v in list(self.links[i].items()):
             relation_triple.append((v,self.nodes[i],k))
-        for k2,v2 in self.const_links[i].items():
+        for k2,v2 in list(self.const_links[i].items()):
             relation_triple.append((k2,self.nodes[i],v2))
       return (instance_triple,relation_triple)
 
@@ -69,21 +69,21 @@ class AMR(object):
       relation_triple2=[]
       for i in range(len(self.nodes)):
         instance_triple.append(("instance",self.nodes[i],self.var_values[i]))
-        for k,v in self.links[i].items():
+        for k,v in list(self.links[i].items()):
             relation_triple2.append((v,self.nodes[i],k))
-        for k2,v2 in self.const_links[i].items():
+        for k2,v2 in list(self.const_links[i].items()):
             relation_triple1.append((k2,self.nodes[i],v2))
       return (instance_triple,relation_triple1,relation_triple2)
 
   def __str__(self):
       """Output AMR string"""
       for i in range(len(self.nodes)):
-        print "Variable", i, self.nodes[i], ", Variable value:", self.var_values[i]
-        print "Dependencies:"
-        for k,v in self.links[i].items():
-          print "Variable", k, " via ",v
-        for k2,v2 in self.const_links[i].items():
-          print "Attribute:",k2, "value",v2
+        print("Variable", i, self.nodes[i], ", Variable value:", self.var_values[i])
+        print("Dependencies:")
+        for k,v in list(self.links[i].items()):
+          print("Variable", k, " via ",v)
+        for k2,v2 in list(self.const_links[i].items()):
+          print("Attribute:",k2, "value",v2)
 
   def __repr__(self):
       return self.__str__()
@@ -118,7 +118,7 @@ class AMR(object):
             continue
          if state==2:
             if cur_attr_name!="":
-               print >> sys.stderr, "Format error when processing ",line[0:i+1]
+               print("Format error when processing ",line[0:i+1], file=sys.stderr)
                return None
             cur_attr_name="".join(cur_charseq).strip() #just identified a relation before a concept after parenthesis
             cur_charseq[:]=[]
@@ -136,12 +136,12 @@ class AMR(object):
             cur_charseq[:]=[]
             parts=temp_attr_value.split()
             if len(parts)<2:
-               print >> sys.stderr, "Error in processing",line[0:i+1]
+               print("Error in processing",line[0:i+1], file=sys.stderr)
                return None
             attr_name=parts[0].strip()
             attr_value=parts[1].strip()
             if len(stack)==0:
-               print >> sys.stderr, "Error in processing",line[:i],attr_name,attr_value
+               print("Error in processing",line[:i],attr_name,attr_value, file=sys.stderr)
                return None
             if attr_value not in var_dict:
                var_attr_dict2[stack[-1]].append((attr_name,attr_value)) #var_attr_dict2 recognize relation between a variable and a const
@@ -164,7 +164,7 @@ class AMR(object):
             variable_name="".join(cur_charseq)
             cur_charseq[:]=[]
             if variable_name in var_dict:
-               print >> sys.stderr, "Duplicate variable ",variable_name, " in parsing AMR"
+               print("Duplicate variable ",variable_name, " in parsing AMR", file=sys.stderr)
                return None
             stack.append(variable_name)
             var_list.append(variable_name)
@@ -182,7 +182,7 @@ class AMR(object):
                cur_attr_name=""
          else:
             #print state
-            print >> sys.stderr, "Error in parsing AMR", line[0:i+1]
+            print("Error in parsing AMR", line[0:i+1], file=sys.stderr)
             return None
          state=3
       elif c==")":
@@ -190,14 +190,14 @@ class AMR(object):
             continue
          #pop
          if len(stack)==0:
-            print >> sys.stderr, "Unmatched parathesis at position", i, "in processing", line[0:i+1]
+            print("Unmatched parathesis at position", i, "in processing", line[0:i+1], file=sys.stderr)
             return None
          if state==2:
             temp_attr_value="".join(cur_charseq)
             cur_charseq[:]=[]
             parts=temp_attr_value.split()
             if len(parts)<2:
-               print >> sys.stderr, "Error processing",line[:i+1],temp_attr_value
+               print("Error processing",line[:i+1],temp_attr_value, file=sys.stderr)
                return None
             attr_name=parts[0].strip()
             attr_value=parts[1].strip()
@@ -245,7 +245,7 @@ class AMR(object):
     for v in var_list:
       #print var_dict[v]
       if v not in var_dict:
-         print >> sys.stderr, "Error: variable value not found", v
+         print("Error: variable value not found", v, file=sys.stderr)
          return None
       else:
          var_value_list.append(var_dict[v])

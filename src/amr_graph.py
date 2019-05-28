@@ -1,6 +1,6 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 import sys, re
-import cPickle
+import pickle
 import amr
 from amr import *
 import amr_parser
@@ -204,7 +204,7 @@ class AMRNode(object):
             for op_edge_index in name_node.v_edges:
                 curr_op_edge = self.graph.edges[op_edge_index]
                 if curr_op_edge.label[:2] != 'op':
-                    print 'Extra operand: %s' % curr_op_edge.label
+                    print('Extra operand: %s' % curr_op_edge.label)
                     continue
 
                 op_index = int(curr_op_edge.label[2:])
@@ -411,7 +411,7 @@ class AMRGraph(object):
             self.dict[curr_var] = var_values[i] #maintain a dict for all the variable values
 
             #Setting a constant edge for a node: the variable name
-            if curr_var not in label_to_node.keys(): #Haven't created a node for the current variable yet
+            if curr_var not in list(label_to_node.keys()): #Haven't created a node for the current variable yet
                 curr_node = AMRNode(self)
                 curr_node_index = len(self.nodes)
                 self.nodes.append(curr_node)
@@ -433,7 +433,7 @@ class AMRGraph(object):
             if curr_var in rel_links:
                 for rel, linked_val, is_var, is_coref in rel_links[curr_var]:
                     if is_var:
-                        assert linked_val in label_to_node.keys(), 'Current coref variable %s is not a node yet' % linked_val
+                        assert linked_val in list(label_to_node.keys()), 'Current coref variable %s is not a node yet' % linked_val
                         tail_node_index = label_to_node[linked_val] #Find the existed linked node index
                         edge = AMREdge(rel, self, curr_node_index, tail_node_index)
                         if is_coref:  #The node for this variable has already been generated
@@ -456,9 +456,9 @@ class AMRGraph(object):
                             try:
                                 assert False, 'This should not happen again'
                             except:
-                                print >> sys.stderr, linked_val
+                                print(linked_val, file=sys.stderr)
                                 linked_val = linked_val.replace('/', '@@@@')
-                                print >> sys.stderr, linked_val
+                                print(linked_val, file=sys.stderr)
 
                         tail_node_index = len(self.nodes)
                         self.nodes.append(tail_node)
@@ -586,7 +586,7 @@ class AMRGraph(object):
         assert False, 'not fully tested, don\'t use'
         assert n1 < len(self.nodes) and n2 < len(self.nodes)
 
-        print '---------------', n1, n2
+        print('---------------', n1, n2)
         set_n1 = set([n1,])
         labels_n1 = []
         while len(self.nodes[n1].p_edges) > 0:
@@ -594,7 +594,7 @@ class AMRGraph(object):
             n1_prime = edge.head
             if n1_prime in set_n1:
                 break
-            print 'n1 part', (n1, n1_prime, edge.label)
+            print('n1 part', (n1, n1_prime, edge.label))
             labels_n1.append((n1_prime, edge.label))
             n1 = n1_prime
 
@@ -605,7 +605,7 @@ class AMRGraph(object):
             n2_prime = edge.head
             if n2_prime in set_n2:
                 break
-            print 'n2 part', (n2, n2_prime, edge.label)
+            print('n2 part', (n2, n2_prime, edge.label))
             labels_n2.append((n2_prime, edge.label))
             n2 = n2_prime
 
@@ -614,7 +614,7 @@ class AMRGraph(object):
             if n1 != n2:
                 result.append(label)
         result = result + [x[1] for x in labels_n2]
-        print result
+        print(result)
         return result
 
 
@@ -647,8 +647,8 @@ class AMRGraph(object):
             try:
                 assert 'wiki' in edge_label_set
             except:
-                print 'ill-formed entity found'
-                print str(self)
+                print('ill-formed entity found')
+                print(str(self))
                 return False
             return True
         return False
@@ -685,16 +685,16 @@ class AMRGraph(object):
 
     def print_info(self):
         #print all nodes info
-        print 'Nodes information:'
-        print 'Number of nodes: %s' % len(self.nodes)
+        print('Nodes information:')
+        print('Number of nodes: %s' % len(self.nodes))
         for n, node in enumerate(self.nodes()):
-            print str(node), ',', n
+            print(str(node), ',', n)
 
         #print all edges info
-        print 'Edges information'
-        print 'Number of edges: %s' % len(self.edges)
+        print('Edges information')
+        print('Number of edges: %s' % len(self.edges))
         for e, edge in enumerate(self.edges):
-            print edge.label, ',', e
+            print(edge.label, ',', e)
 
     def check_self_cycle(self):
         visited_nodes = set()
@@ -1179,7 +1179,7 @@ class AMRGraph(object):
         tuple_set = set([(self.edges[edge_index].label, self.nodes[self.edges[edge_index].tail].node_str()) for edge_index in node.v_edges])
         ex_rels = []
 
-        for (rel, tail_concept) in subgraph[root_label].items():
+        for (rel, tail_concept) in list(subgraph[root_label].items()):
             if (rel, tail_concept) in tuple_set:
                 ex_rels.append(rel)
             else:
@@ -1558,14 +1558,14 @@ class AMRGraph(object):
         curr_depth = len(integer_concepts[0])
 
         #Starting from the node identified in the first step, retrieve the rest of the nodes and the relations that connect them
-        for i in xrange(1, n_nodes):
+        for i in range(1, n_nodes):
             curr_len = lengths[i]
             try:
                 assert len(integer_concepts[i]) == curr_depth+1, 'A relation has across more than 1 layer in just one step'
             except:
-                print integer_concepts
-                print integer_concepts[i]
-                print curr_depth
+                print(integer_concepts)
+                print(integer_concepts[i])
+                print(curr_depth)
                 #sys.exit(-1)
                 #logger.writeln(integer_concepts)
                 return None
@@ -1612,7 +1612,7 @@ class AMRGraph(object):
                 try:
                     curr_edge_index = curr_node.v_edges[curr_index]
                 except:
-                    print s_rep
+                    print(s_rep)
                     sys.exit(1)
                 if i + 1 != len(path) and path[i+1] == 'r': #It's a relation
                     return ('r', curr_edge_index)
@@ -1630,11 +1630,11 @@ class AMRGraph(object):
 
         curr_node_index = self.root
         curr_node = self.nodes[curr_node_index]
-        for curr_depth in xrange(1, len(i_path)):
+        for curr_depth in range(1, len(i_path)):
             v_edges = curr_node.v_edges
             num = 0
             curr_index = i_path[curr_depth]
-            for i in xrange(len(v_edges)): #search for non-coref nodes
+            for i in range(len(v_edges)): #search for non-coref nodes
                 curr_edge_index = v_edges[i]
                 curr_edge = self.edges[curr_edge_index]
                 if not curr_edge.is_coref:
@@ -1651,7 +1651,7 @@ class AMRGraph(object):
         curr_index = 0
         curr_edge_index = -1
         curr_node_index = -1
-        for i in xrange(len(v_edges)): #search for non-coref nodes
+        for i in range(len(v_edges)): #search for non-coref nodes
             curr_edge_index = v_edges[i]
             curr_edge = self.edges[curr_edge_index]
             if not curr_edge.is_coref:
@@ -1676,7 +1676,7 @@ class AMRGraph(object):
             curr_node_label = str(curr_c_edge)
 
             if par_rel == None:   #There is no relation going into this node
-                if not is_coref and curr_node_label in self.dict.keys():
+                if not is_coref and curr_node_label in list(self.dict.keys()):
                     s += "(%s / %s" % (curr_node_label, self.dict[curr_node_label])
                 else:
                     s += "(%s" % curr_node_label
@@ -1686,15 +1686,15 @@ class AMRGraph(object):
                 dep_rec = depth
 
                 if curr_node.is_leaf():
-                    if not is_coref and curr_node_label in self.dict.keys(): #In this case, current node is variable and is visited for the first time. Leaf variable
+                    if not is_coref and curr_node_label in list(self.dict.keys()): #In this case, current node is variable and is visited for the first time. Leaf variable
                         s += "\n%s:%s (%s / %s)"  % (depth*"\t", par_rel, curr_node_label, self.dict[curr_node_label])
                     else:
-                        if curr_node_label not in self.dict.keys() and curr_node.use_quote:
+                        if curr_node_label not in list(self.dict.keys()) and curr_node.use_quote:
                             s += '\n%s:%s "%s"' % (depth*"\t", par_rel, curr_node_label)
                         else:
                             s += "\n%s:%s %s" % (depth*"\t", par_rel, curr_node_label)
                 else:
-                    if not is_coref and curr_node_label in self.dict.keys(): #In this case, current node is variable and is visited for the first time. Not leaf variable
+                    if not is_coref and curr_node_label in list(self.dict.keys()): #In this case, current node is variable and is visited for the first time. Not leaf variable
                         s += "\n%s:%s (%s / %s"  % (depth*"\t", par_rel, curr_node_label, self.dict[curr_node_label])
                     else:
                         s += "\n%s:%s %s" % (depth*"\t", par_rel, curr_node_label)
@@ -1788,7 +1788,7 @@ class AMRGraph(object):
                             s += "(%s" % entity_tag #Single entity
                     else:
                         s += "%s_copy" % entity_tag
-                        print "impossible here!"
+                        print("impossible here!")
                 else:
                     if depth < dep_rec:  #If the current layer is smaller than the current depth, then the previous few variables have finished traverse, print out the corresponding ) as finish
                         s += "%s" % ((dep_rec- depth) * ')')
@@ -1804,7 +1804,7 @@ class AMRGraph(object):
 
             else:
                 if not par_rel:   #There is no relation going into this node
-                    if not is_coref and curr_node_label in self.dict.keys():
+                    if not is_coref and curr_node_label in list(self.dict.keys()):
                         s += "(%s / %s" % (curr_node_label, self.dict[curr_node_label])
                     else:
                         s += "(%s" % curr_node_label
@@ -1814,15 +1814,15 @@ class AMRGraph(object):
                     dep_rec = depth
 
                     if curr_node.is_leaf():
-                        if not is_coref and curr_node_label in self.dict.keys(): #In this case, current node is variable and is visited for the first time. Leaf variable
+                        if not is_coref and curr_node_label in list(self.dict.keys()): #In this case, current node is variable and is visited for the first time. Leaf variable
                             s += "\n%s:%s (%s / %s)"  % (depth*"\t", par_rel, curr_node_label, self.dict[curr_node_label])
                         else:
-                            if curr_node_label not in self.dict.keys() and curr_node.use_quote:
+                            if curr_node_label not in list(self.dict.keys()) and curr_node.use_quote:
                                 s += '\n%s:%s "%s"' % (depth*"\t", par_rel, curr_node_label)
                             else:
                                 s += "\n%s:%s %s" % (depth*"\t", par_rel, curr_node_label)
                     else:
-                        if not is_coref and curr_node_label in self.dict.keys(): #In this case, current node is variable and is visited for the first time. Not leaf variable
+                        if not is_coref and curr_node_label in list(self.dict.keys()): #In this case, current node is variable and is visited for the first time. Not leaf variable
                             s += "\n%s:%s (%s / %s"  % (depth*"\t", par_rel, curr_node_label, self.dict[curr_node_label])
                         else:
                             s += "\n%s:%s %s" % (depth*"\t", par_rel, curr_node_label)
@@ -1838,7 +1838,7 @@ class AMRGraph(object):
             s += '/'
             s += self.dict[var]
             s += ' '
-        print s
+        print(s)
 
 #unaligned_words are formatted as tuples of (position, word)
 def match_word(label, unaligned_words, lemma_map, stop_words):
@@ -1874,8 +1874,8 @@ if __name__ == '__main__':
     # re-entrance
     amr_line = '(f / foolish :condition (d / do-02  :ARG0 i) :domain (i / i))'
     g = AMRGraph(amr_line)
-    print len(g)
-    print g.extract_ngrams(4)
+    print(len(g))
+    print(g.extract_ngrams(4))
     sys.exit(0)
 
     #amr_line = '(w / want-01 :ARG0 (b / boy) :ARG1 (g / go-01 :ARG0 b))'

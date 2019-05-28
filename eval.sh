@@ -3,4 +3,4 @@
 #SBATCH --mem=5GB
 #SBATCH -c 5
 
-python src/eval.py $1 $2
+python3 src/eval.py $1 $2

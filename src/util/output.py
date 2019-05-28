@@ -20,7 +20,7 @@ def walk_derivation(derivation, combiner, leaf):
         return leaf(derivation)
     else: 
         item, children = derivation[0], derivation[1]        
-        childobjs = dict([(rel, walk_derivation(c, combiner, leaf)) for (rel, c) in children.items()])
+        childobjs = dict([(rel, walk_derivation(c, combiner, leaf)) for (rel, c) in list(children.items())])
        
         if item == "START":
             return childobjs["START"]
@@ -35,7 +35,7 @@ def format_derivation(derivation):
     """
     def combiner(item, childobjs):
         children = []
-        for nt, child in childobjs.items():
+        for nt, child in list(childobjs.items()):
             edgestring = "$".join(nt)
             children.append("%s(%s)" % (edgestring, child))
         childstr = " ".join(children)
@@ -63,13 +63,13 @@ def apply_graph_derivation(derivation):
 
     def combiner(item, childobjs):
         graph = leaf(item)
-        for nt, cgraph in childobjs.items():
+        for nt, cgraph in list(childobjs.items()):
                 p,r,c = graph.find_nt_edge(*nt)
                 fragment = Hgraph.from_triples([(p,r,c)],graph.node_to_concepts)
                 try:
                     graph = graph.replace_fragment(fragment, cgraph)
-                except AssertionError, e:
-                    raise DerivationException, "Incompatible hyperedge type for nonterminal %s." % str(nt[0])
+                except AssertionError as e:
+                    raise DerivationException("Incompatible hyperedge type for nonterminal %s." % str(nt[0]))
         step[0] = step[0] + 1
         return graph 
 
@@ -106,13 +106,13 @@ def format_tiburon(chart, logprob = False):
             childstrl = []
             if item == "START":
                 parent_rtg_state = "_START"
-                for nt,child in possibility.items():
+                for nt,child in list(possibility.items()):
                     lines.add("_START -> %s\t#%f" % (child.uniq_str(), 0.0 if logprob else 1.0))
                     if not child in chart: 
                         lines.add("%s -> %s\t#%f" % (child.uniq_str(), child.rule.rule_id, child.rule.weight))
             else: 
                 parent_rtg_state = item.uniq_str()
-                for nt,child in possibility.items():                
+                for nt,child in list(possibility.items()):                
                     symbol, index = nt                 
                     if not child in chart: 
                         childstrl.append("%s$%s(%s)" % (symbol, index, child.uniq_str()))

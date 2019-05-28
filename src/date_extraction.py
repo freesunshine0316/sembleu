@@ -103,7 +103,7 @@ def date_extraction(toks):
     if len(toks) == 3:
         is_quantity = True
         amount = 1
-        for i in xrange(3):
+        for i in range(3):
             if is_percentage(toks[i]) or toks[i] in quantities:
                 if toks[i] in quantities:
                     amount *= float(quantities[toks[i]])
@@ -121,7 +121,7 @@ def date_extraction(toks):
     if len(toks) == 2:
         is_quantity = True
         amount = 1
-        for i in xrange(2):
+        for i in range(2):
             if is_percentage(toks[i]) or toks[i] in quantities:
                 if toks[i] in quantities:
                     amount *= float(quantities[toks[i]])
@@ -152,15 +152,15 @@ def extract_all_dates(file):
             toks = line.split()
             n_toks = len(toks)
             aligned = set()
-            for start in xrange(n_toks):
+            for start in range(n_toks):
                 if start in aligned:
                     continue
-                for length in xrange(n_toks+1, 0, -1):
+                for length in range(n_toks+1, 0, -1):
                     end = start + length
                     if end > n_toks:
                         continue
 
-                    span_set = set(xrange(start, end))
+                    span_set = set(range(start, end))
                     if len(span_set & aligned) != 0:
                         continue
 

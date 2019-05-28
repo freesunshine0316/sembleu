@@ -8,7 +8,7 @@
 # For license information, see LICENSE.TXT
 
 """BLEU score implementation."""
-from __future__ import division
+
 
 import math
 import sys
@@ -70,10 +70,10 @@ def corpus_bleu(list_of_references, hypotheses, weights=(0.34, 0.33, 0.33),
     # Uniformly re-weighting based on maximum hypothesis lengths if largest
     # order of n-grams < 4 and weights is set at default.
     if auto_reweigh:
-        max_gram = max([x for x,y in p_denominators.iteritems() if y > 0])
+        max_gram = max([x for x,y in p_denominators.items() if y > 0])
         if max_gram < len(weights):
             weights = ( 1.0 / max_gram ,) * max_gram
-            print 'Auto_reweigh, max-gram is', max_gram, 'new weight is', weights
+            print('Auto_reweigh, max-gram is', max_gram, 'new weight is', weights)
 
     # Collects the various precision values for the different ngram orders.
     p_n = [Fraction(p_numerators[i], p_denominators[i], _normalize=False)
@@ -94,7 +94,7 @@ def corpus_bleu(list_of_references, hypotheses, weights=(0.34, 0.33, 0.33),
     #       smoothing method allows.
     p_n = smoothing_function(p_n, references=references, hypothesis=hypothesis,
                              hyp_len=hyp_len, emulate_multibleu=emulate_multibleu)
-    s = (w * math.log(p_i) for i, (w, p_i) in enumerate(zip(weights, p_n)))
+    s = (w * math.log(p_i) for i, (w, p_i) in enumerate(list(zip(weights, p_n))))
     s =  bp * math.exp(math.fsum(s))
     return round(s, 4) if emulate_multibleu else s
 
@@ -116,7 +116,7 @@ def modified_precision_amr(references, hypothesis, n):
 
     # Assigns the intersection between hypothesis and references' counts.
     clipped_counts = {ngram: min(count, max_counts[ngram])
-                      for ngram, count in counts.items()}
+                      for ngram, count in list(counts.items())}
     #print 'clipped_counts', clipped_counts
 
     numerator = sum(clipped_counts.values())

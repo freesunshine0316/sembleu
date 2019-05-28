@@ -88,8 +88,8 @@ if __name__ == '__main__':
     try:
         argv = FLAGS(sys.argv)  # parse flags
     except gflags.FlagsError as e:
-        print('%s\nUsage: %s ARGS\n%s' % (e, sys.argv[0], FLAGS))
+        print(('%s\nUsage: %s ARGS\n%s' % (e, sys.argv[0], FLAGS)))
         sys.exit(1)
 
-    for i in select(timed(range(1000))):
+    for i in select(timed(list(range(1000)))):
         print(i)

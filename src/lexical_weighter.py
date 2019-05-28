@@ -28,7 +28,7 @@ class LexicalWeighter(object):
             self.eweighttable = read_weightfile(open(eweightfile))
         if ratiofile is not None:
             self.ratiotable = read_weightfile(open(ratiofile))
-            for ((word1,word2),p) in self.ratiotable.iteritems():
+            for ((word1,word2),p) in self.ratiotable.items():
                 # this cutoff determined by looking at ratio vs. rank
                 # basically the curve has three parts:
                 if p > 100.0:

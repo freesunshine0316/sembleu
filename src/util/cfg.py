@@ -2,7 +2,7 @@ import itertools
 from util import log
 from util.logarithm import logadd, logsum, LOGZERO
 from collections import defaultdict
-from Queue import PriorityQueue
+from queue import PriorityQueue
 import math
 import heapq
 
@@ -79,20 +79,20 @@ class Chart(dict):
         # Find the k-best options for this rule.
         # Compute k-best for each possible split and add to pool.
         for split in self[item]:
-            nts, children = zip(*split.items())
+            nts, children = list(zip(*list(split.items())))
             kbest_each_child = [self.kbest(child, k) for child in children]
 
             all_combinations  = list(itertools.product(*kbest_each_child))
 
             combinations_for_sorting = []
             for combination in all_combinations:
-                 weights, trees = zip(*combination)
+                 weights, trees = list(zip(*combination))
                  heapq.heappush(combinations_for_sorting,(sum(weights)+rprob,trees))
 
             #combinations_for_sorting.sort(reverse=True)
 
             for prob, trees in heapq.nlargest(k, combinations_for_sorting):
-                new_tree = (item, dict(zip(nts, trees)))
+                new_tree = (item, dict(list(zip(nts, trees))))
                 heapq.heappush(pool, (prob, new_tree))
 
         # Return k-best from pool
@@ -118,7 +118,7 @@ class Chart(dict):
             if item in self:
                 beta_each_split = []
                 for split in self[item]:
-                    nts, children = zip(*split.items())
+                    nts, children = list(zip(*list(split.items())))
                     beta_each_child = [compute_scores(chart, child) for child in children]
                     beta_this_split = sum(beta_each_child)
                     beta_each_split.append(beta_this_split)
@@ -147,7 +147,7 @@ class Chart(dict):
             """
             if item in chart:
                 for split in chart[item]:
-                    nts, children = zip(*split.items())
+                    nts, children = list(zip(*list(split.items())))
 
                     # An item may be part of multiple splits, so we need to add the outside score when we
                     #  encounter it a second time.
@@ -170,7 +170,7 @@ class Chart(dict):
 
         for item in self:
             for split in self[item]:
-                nts, children = zip(*split.items())
+                nts, children = list(zip(*list(split.items())))
                 for child in children:
                     childgamma = outside_probs[item] + inside_probs[child] + child.rule.weight
                     counts[child.rule.rule_id] = logadd(counts[child.rule.rule_id] ,(childgamma - beta_sentence))

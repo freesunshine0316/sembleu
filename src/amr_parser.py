@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 import sys
 from collections import defaultdict
 def surface_check_var(s):
@@ -6,7 +6,7 @@ def surface_check_var(s):
         return False
     if len(s) == 1:
         return True
-    for i in xrange(1, len(s)):
+    for i in range(1, len(s)):
         if s[i] < '0' or s[i] > '9':
             return False
     return True
@@ -38,7 +38,7 @@ def from_AMR_line(line):
                 continue
             if state==2:
                 if cur_attr_name!="":
-                    print >> sys.stderr, "Format error when processing ",line[0:i+1]
+                    print("Format error when processing ",line[0:i+1], file=sys.stderr)
                     return None
                 cur_attr_name="".join(cur_charseq).strip() #just identified a relation before a concept after parenthesis
                 cur_charseq[:]=[]
@@ -56,12 +56,12 @@ def from_AMR_line(line):
                 cur_charseq[:]=[]
                 parts=temp_attr_value.split()
                 if len(parts)<2:
-                    print >> sys.stderr, "Error in processing",line[0:i+1]
+                    print("Error in processing",line[0:i+1], file=sys.stderr)
                     return None
                 attr_name=parts[0].strip()
                 attr_value=(' '.join(parts[1:])).strip()
                 if len(stack)==0:
-                    print >> sys.stderr, "Error in processing",line[:i],attr_name,attr_value
+                    print("Error in processing",line[:i],attr_name,attr_value, file=sys.stderr)
                     return None
                 if attr_value not in var_dict:
                     if surface_check_var(attr_value): #The first appearance of the variable
@@ -82,7 +82,7 @@ def from_AMR_line(line):
                 variable_name="".join(cur_charseq)
                 cur_charseq[:]=[]
                 if variable_name in var_dict:
-                    print >> sys.stderr, "Duplicate variable ",variable_name, " in parsing AMR"
+                    print("Duplicate variable ",variable_name, " in parsing AMR", file=sys.stderr)
                     return None
                 stack.append(variable_name)
                 var_list.append(variable_name)
@@ -94,21 +94,21 @@ def from_AMR_line(line):
                         var_attr_dict1[stack[-2]].append((cur_attr_name, variable_name, True, False))
                     cur_attr_name=""
             else:
-                print >> sys.stderr, "Error in parsing AMR", line[0:i+1]
+                print("Error in parsing AMR", line[0:i+1], file=sys.stderr)
                 return None
             state=3
         elif c==")":
             if in_quote:
                 continue
             if len(stack)==0:
-                print >> sys.stderr, "Unmatched parathesis at position", i, "in processing", line[0:i+1]
+                print("Unmatched parathesis at position", i, "in processing", line[0:i+1], file=sys.stderr)
                 return None
             if state==2:
                 temp_attr_value="".join(cur_charseq)
                 cur_charseq[:]=[]
                 parts=temp_attr_value.split()
                 if len(parts)<2:
-                    print >> sys.stderr, "Error processing",line[:i+1],temp_attr_value
+                    print("Error processing",line[:i+1],temp_attr_value, file=sys.stderr)
                     return None
                 attr_name=parts[0].strip()
                 attr_value=(' '.join(parts[1:])).strip()
@@ -138,7 +138,7 @@ def from_AMR_line(line):
 
     for v in var_list:
         if v not in var_dict:
-            print >> sys.stderr, "Error: variable value not found", v
+            print("Error: variable value not found", v, file=sys.stderr)
             return None
         else:
             var_value_list.append(var_dict[v])
