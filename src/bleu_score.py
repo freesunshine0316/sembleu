@@ -16,8 +16,6 @@ import fractions
 import warnings
 from collections import Counter
 
-from nltk.util import ngrams
-
 try:
     fractions.Fraction(0, 1000, _normalize=False)
     from fractions import Fraction
@@ -55,6 +53,8 @@ def corpus_bleu(list_of_references, hypotheses, weights=(0.34, 0.33, 0.33),
         # denominator for the corpus-level modified precision.
         for i, _ in enumerate(weights, start=1):
             p_i = modified_precision_amr(references, hypothesis, i)
+            if p_i == None:
+                continue
             p_numerators[i] += p_i.numerator
             p_denominators[i] += p_i.denominator
 
@@ -71,7 +71,7 @@ def corpus_bleu(list_of_references, hypotheses, weights=(0.34, 0.33, 0.33),
     # order of n-grams < 4 and weights is set at default.
     if auto_reweigh:
         max_gram = max([x for x,y in p_denominators.iteritems() if y > 0])
-        if max_gram < 4 and len(weights) == 4:
+        if max_gram < len(weights):
             weights = ( 1.0 / max_gram ,) * max_gram
             print 'Auto_reweigh, max-gram is', max_gram, 'new weight is', weights
 
@@ -103,6 +103,7 @@ def modified_precision_amr(references, hypothesis, n):
     # Extracts all ngrams in hypothesis
     # Set an empty Counter if hypothesis is empty.
     counts = Counter(hypothesis.ngram[n]) if n in hypothesis.ngram else Counter()
+    #print 'counts', counts
     # Extract a union of references' counts.
     ## max_counts = reduce(or_, [Counter(ngrams(ref, n)) for ref in references])
     max_counts = {}
@@ -111,15 +112,21 @@ def modified_precision_amr(references, hypothesis, n):
         for ngram in counts:
             max_counts[ngram] = max(max_counts.get(ngram, 0),
                                     reference_counts[ngram])
+    #print 'max_counts', max_counts
 
     # Assigns the intersection between hypothesis and references' counts.
     clipped_counts = {ngram: min(count, max_counts[ngram])
                       for ngram, count in counts.items()}
+    #print 'clipped_counts', clipped_counts
 
     numerator = sum(clipped_counts.values())
-    # Ensures that denominator is minimum 1 to avoid ZeroDivisionError.
-    # Usually this happens when the ngram order is > len(reference).
-    denominator = max(1, sum(counts.values()))
+    denominator = sum(counts.values())
+    ## Ensures that denominator is minimum 1 to avoid ZeroDivisionError.
+    ## Usually this happens when the ngram order is > len(reference).
+    #denominator = max(1, sum(counts.values()))
+
+    if denominator == 0:
+        return None
 
     return Fraction(numerator, denominator, _normalize=False)
 
@@ -258,7 +265,7 @@ class SmoothingFunction:
         incvnt = 1 # From the mteval-v13a.pl, it's referred to as k.
         for i, p_i in enumerate(p_n):
             if p_i.numerator == 0:
-                p_n[i] = 1 / (2**incvnt * p_i.denominator)
+                p_n[i] = 1 / (2**incvnt * max(1.0, p_i.denominator))
                 incvnt+=1
         return p_n
 
@@ -275,59 +282,4 @@ class SmoothingFunction:
                 incvnt = i+1 * self.k / math.log(hyp_len) # Note that this K is different from the K from NIST.
                 p_n[i] = 1 / incvnt
         return p_n
-
-
-    def method5(self, p_n, references, hypothesis, hyp_len, *args, **kwargs):
-        """
-        Smoothing method 5:
-        The matched counts for similar values of n should be similar. To a
-        calculate the n-gram matched count, it averages the n−1, n and n+1 gram
-        matched counts.
-        """
-        m = {}
-        # Requires an precision value for an addition ngram order.
-        p_n_plus1 = p_n + [modified_precision_amr(references, hypothesis, 5)]
-        m[-1] = p_n[0] + 1
-        for i, p_i in enumerate(p_n):
-            p_n[i] = (m[i-1] + p_i + p_n_plus1[i+1]) / 3
-            m[i] = p_n[i]
-        return p_n
-
-    def method6(self, p_n, references, hypothesis, hyp_len, *args, **kwargs):
-        """
-        Smoothing method 6:
-        Interpolates the maximum likelihood estimate of the precision *p_n* with
-        a prior estimate *pi0*. The prior is estimated by assuming that the ratio
-        between pn and pn−1 will be the same as that between pn−1 and pn−2; from
-        Gao and He (2013) Training MRF-Based Phrase Translation Models using
-        Gradient Ascent. In NAACL.
-        """
-        # This smoothing only works when p_1 and p_2 is non-zero.
-        # Raise an error with an appropriate message when the input is too short
-        # to use this smoothing technique.
-        assert p_n[2], "This smoothing method requires non-zero precision for bigrams."
-        for i, p_i in enumerate(p_n):
-            if i in [0,1]: # Skips the first 2 orders of ngrams.
-                continue
-            else:
-                pi0 = 0 if p_n[i-2] == 0 else p_n[i-1]**2 / p_n[i-2]
-                # No. of ngrams in translation that matches the reference.
-                m = p_i.numerator
-                # No. of ngrams in translation.
-                l = sum(1 for _ in ngrams(hypothesis, i+1))
-                # Calculates the interpolated precision.
-                p_n[i] = (m + self.alpha * pi0) / (l + self.alpha)
-        return p_n
-
-    def method7(self, p_n, references, hypothesis, hyp_len, *args, **kwargs):
-        """
-        Smoothing method 6:
-        Interpolates the maximum likelihood estimate of the precision *p_n* with
-        a prior estimate *pi0*. The prior is estimated by assuming that the ratio
-        between pn and pn−1 will be the same as that between pn−1 and pn−2.
-        """
-        p_n = self.method4(p_n, references, hypothesis, hyp_len)
-        p_n = self.method5(p_n, references, hypothesis, hyp_len)
-        return p_n
-
 
