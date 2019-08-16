@@ -4,6 +4,7 @@ The repository corresponds to our recent ACL 2019 paper entitled "SemBleu: A Rob
 
 ## Results
 
+The table below lists the SemBleu scores of recent SOTA work. The numbers are obtained by running our script on their provided outputs.
 
 | Model | SemBleu |
 |---|---|
