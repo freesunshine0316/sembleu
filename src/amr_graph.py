@@ -249,7 +249,7 @@ class AMRGraph(object):
         for eid, e in enumerate(self.edges):
             e.is_coref = False
             if e.label.endswith('-of'):
-                e.label.replace('-of', '', 10)
+                e.label = e.label.replace('-of', '', 10)
                 p, v = self.nodes[e.head], self.nodes[e.tail]
                 p.v_edges.remove(eid)
                 p.p_edges.add(eid)

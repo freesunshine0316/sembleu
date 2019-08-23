@@ -9,7 +9,7 @@ def read_amr(path):
     id_dict = {}
     amrs = []
     amr_str = ''
-    for line in open(path,'rU'):
+    for line in open(path,'r'):
         if line.startswith('#'):
             if line.startswith('# ::id'):
                 id = line.strip().split()[2]
