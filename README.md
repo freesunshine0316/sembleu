@@ -9,17 +9,17 @@ The table below lists the SemBleu scores of recent SOTA work. The numbers are ob
 | Model | SemBleu |
 |---|---|
 | LDC2015E86 ||
-| [Lyu and Titov, (2018)](https://www.aclweb.org/anthology/P18-1037) | 58.7 |
-| [Groschwitz et al., (2018)](https://www.aclweb.org/anthology/P18-1170) | 51.8 |
-| [Guo and Lu, (2018)](https://www.aclweb.org/anthology/D18-1198) | 50.4 |
+| [Lyu and Titov, (ACL 2018)](https://www.aclweb.org/anthology/P18-1037) | 58.7 |
+| [Groschwitz et al., (ACL 2018)](https://www.aclweb.org/anthology/P18-1170) | 51.8 |
+| [Guo and Lu, (EMNLP 2018)](https://www.aclweb.org/anthology/D18-1198) | 50.4 |
 | LDC2016E25 ||
-| [Lyu and Titov, (2018)](https://www.aclweb.org/anthology/P18-1037) | 60.3 |
-| [van Noord and Bos, (2017)](https://arxiv.org/abs/1705.09980) | 49.5 |
+| [Lyu and Titov, (ACL 2018)](https://www.aclweb.org/anthology/P18-1037) | 60.3 |
+| [van Noord and Bos, (CLIN 2017)](https://arxiv.org/abs/1705.09980) | 49.5 |
 | LDC2017T10 ||
-| [Zhang et al., (2019)](https://www.aclweb.org/anthology/P19-1009) | 59.9 |
-| [Cai and Lam (2019)]() | 56.9 |
-| [Groschwitz et al., (2018)](https://www.aclweb.org/anthology/P18-1170) | 52.5 |
-| [Guo and Lu, (2018)](https://www.aclweb.org/anthology/D18-1198) | 52.4 |
+| [Zhang et al., (ACL 2019)](https://www.aclweb.org/anthology/P19-1009) | 59.9 |
+| [Cai and Lam (EMNLP 2019)]() | 56.9 |
+| [Groschwitz et al., (ACL 2018)](https://www.aclweb.org/anthology/P18-1170) | 52.5 |
+| [Guo and Lu, (EMNLP 2018)](https://www.aclweb.org/anthology/D18-1198) | 52.4 |
 
 ## Usage
 
