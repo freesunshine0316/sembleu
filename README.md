@@ -17,6 +17,7 @@ The table below lists the SemBleu scores of recent SOTA work. The numbers are ob
 | [van Noord and Bos, (2017)](https://arxiv.org/abs/1705.09980) | 49.5 |
 | LDC2017T10 ||
 | [Zhang et al., (2019)](https://www.aclweb.org/anthology/P19-1009) | 59.9 |
+| [Cai and Lam (2019)]() | 56.9 |
 | [Groschwitz et al., (2018)](https://www.aclweb.org/anthology/P18-1170) | 52.5 |
 | [Guo and Lu, (2018)](https://www.aclweb.org/anthology/D18-1198) | 52.4 |
 
