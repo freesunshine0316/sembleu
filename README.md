@@ -1,9 +1,9 @@
 # SemBleu: A Robust Metric for AMR Parsing Evaluation
 
 The repository corresponds to our recent ACL 2019 paper entitled "SemBleu: A Robust Metric for AMR Parsing Evaluation".
-*SemBleu* is fast, taking less than a second to evaluate a thousand of AMR pairs.
-*SemBleu* is accuray without any search errors.
-From empirical experiment, it is mostly consistent with *Smatch*, but *SemBleu* can better capture performance variations, since it considers high-order correspondences.
+* *SemBleu* is fast, taking less than a second to evaluate a thousand of AMR pairs.
+* *SemBleu* is accuray without any search errors.
+* *SemBleu* considers high-order correspondences. From our experiments, it is mostly consistent with *Smatch*, but *SemBleu* can better capture performance variations.
 
 ## Results
 
