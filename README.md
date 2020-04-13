@@ -5,6 +5,10 @@ The repository corresponds to our recent ACL 2019 paper entitled "SemBleu: A Rob
 * *SemBleu* is accuray without any search errors.
 * *SemBleu* considers high-order correspondences. From our experiments, it is mostly consistent with *Smatch*, but *SemBleu* can better capture performance variations.
 
+## AMR data
+
+If you're developing a new metric and would like to have a comparison. [Here](https://www.cs.rochester.edu/~lsong10/downloads/sembleu_data.zip) is the 100 AMR graphs and the corresponding system outputs.
+
 ## Results
 
 The table below lists the SemBleu scores of recent SOTA work. The numbers are obtained by running our script on their provided outputs.
