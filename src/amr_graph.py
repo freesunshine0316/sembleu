@@ -248,7 +248,7 @@ class AMRGraph(object):
             n.has_reentrance = False
         for eid, e in enumerate(self.edges):
             e.is_coref = False
-            if e.label.endswith('-of') and e.label.startswith(":"):
+            if e.label.endswith('-of'):
                 e.label = e.label.replace('-of', '', 10)
                 p, v = self.nodes[e.head], self.nodes[e.tail]
                 p.v_edges.remove(eid)
